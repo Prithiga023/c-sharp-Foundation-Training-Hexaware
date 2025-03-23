@@ -1,0 +1,130 @@
+-- 1. Create the SISDB Database
+CREATE DATABASE SISDB;
+USE SISDB;
+
+-- 2. Create Tables with Schema and Constraints
+
+-- Students Table
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone_number VARCHAR(15) UNIQUE NOT NULL
+);
+
+-- Teacher Table
+CREATE TABLE Teacher (
+    teacher_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- Courses Table
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(100) NOT NULL,
+    credits INT CHECK (credits BETWEEN 1 AND 5),
+    teacher_id INT,
+    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id) ON DELETE SET NULL
+);
+
+-- Enrollments Table
+CREATE TABLE Enrollments (
+    enrollment_id INT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    enrollment_date DATE NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE
+);
+
+-- Payments Table
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY,
+    student_id INT,
+    amount DECIMAL(10,2) CHECK (amount > 0),
+    payment_date DATE NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ON DELETE CASCADE
+);
+
+-- 3. Insert at least 10 sample records into each table
+
+-- Insert Sample Students
+INSERT INTO Students (student_id, first_name, last_name, date_of_birth, email, phone_number) VALUES
+(1, 'John', 'Doe', '2000-05-10', 'john.doe@email.com', '9876543210'),
+(2, 'Emma', 'Smith', '1999-07-21', 'emma.smith@email.com', '9123456789'),
+(3, 'Liam', 'Brown', '2001-09-14', 'liam.brown@email.com', '9234567890'),
+(4, 'Olivia', 'Johnson', '2000-03-30', 'olivia.johnson@email.com', '9345678901'),
+(5, 'Noah', 'Williams', '1999-12-01', 'noah.williams@email.com', '9456789012'),
+(6, 'Ava', 'Jones', '2002-02-15', 'ava.jones@email.com', '9567890123'),
+(7, 'William', 'Miller', '2001-06-10', 'william.miller@email.com', '9678901234'),
+(8, 'Sophia', 'Davis', '1998-11-25', 'sophia.davis@email.com', '9789012345'),
+(9, 'James', 'Wilson', '2000-08-05', 'james.wilson@email.com', '9890123456'),
+(10, 'Charlotte', 'Anderson', '1997-05-17', 'charlotte.anderson@email.com', '9901234567');
+
+-- Insert Sample Teachers
+INSERT INTO Teacher (teacher_id, first_name, last_name, email) VALUES
+(1, 'Alice', 'Johnson', 'alice.johnson@email.com'),
+(2, 'Michael', 'Williams', 'michael.williams@email.com'),
+(3, 'Sarah', 'Brown', 'sarah.brown@email.com');
+
+-- Insert Sample Courses
+INSERT INTO Courses (course_id, course_name, credits, teacher_id) VALUES
+(1, 'Mathematics', 3, 1),
+(2, 'Computer Science', 4, 2),
+(3, 'Physics', 3, 3),
+(4, 'Biology', 4, 1),
+(5, 'Chemistry', 3, 2),
+(6, 'History', 2, 3),
+(7, 'English Literature', 3, 1),
+(8, 'Geography', 3, 2),
+(9, 'Statistics', 4, 3),
+(10, 'Economics', 3, 1);
+
+-- Insert Sample Enrollments
+INSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date) VALUES
+(1, 1, 1, '2025-03-01'),
+(2, 2, 2, '2025-03-02'),
+(3, 3, 3, '2025-03-03'),
+(4, 4, 4, '2025-03-04'),
+(5, 5, 5, '2025-03-05'),
+(6, 6, 6, '2025-03-06'),
+(7, 7, 7, '2025-03-07'),
+(8, 8, 8, '2025-03-08'),
+(9, 9, 9, '2025-03-09'),
+(10, 10, 10, '2025-03-10');
+
+-- Insert Sample Payments
+INSERT INTO Payments (payment_id, student_id, amount, payment_date) VALUES
+(1, 1, 5000.00, '2025-03-05'),
+(2, 2, 4500.00, '2025-03-06'),
+(3, 3, 5200.00, '2025-03-07'),
+(4, 4, 4900.00, '2025-03-08'),
+(5, 5, 5300.00, '2025-03-09'),
+(6, 6, 4700.00, '2025-03-10'),
+(7, 7, 5100.00, '2025-03-11'),
+(8, 8, 4800.00, '2025-03-12'),
+(9, 9, 5400.00, '2025-03-13'),
+(10, 10, 5000.00, '2025-03-14');
+
+-- 4. Retrieve and Manipulate Data
+
+-- Retrieve All Students and Courses They Enrolled In
+SELECT s.first_name, s.last_name, c.course_name, e.enrollment_date
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+JOIN Courses c ON e.course_id = c.course_id;
+
+-- Calculate Total Payments by Each Student
+SELECT s.first_name, s.last_name, SUM(p.amount) AS total_paid
+FROM Students s
+JOIN Payments p ON s.student_id = p.student_id
+GROUP BY s.first_name, s.last_name;
+
+-- Retrieve Teachers and Their Courses
+SELECT t.first_name, t.last_name, c.course_name
+FROM Teacher t
+JOIN Courses c ON t.teacher_id = c.teacher_id;
