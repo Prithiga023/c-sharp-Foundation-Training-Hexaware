@@ -1,0 +1,29 @@
+-- task 1: insert a new student into the "students" table
+insert into students (first_name, last_name, date_of_birth, email, phone_number) 
+values ('john', 'doe', '1995-08-15', 'john.doe@example.com', '1234567890');
+
+-- task 2: enroll a student in a course
+insert into enrollments (student_id, course_id, enrollment_date) 
+select s.student_id, c.course_id, getdate() 
+from students s, courses c 
+where s.first_name = 'john' and s.last_name = 'doe' and c.course_name like 'database%';
+
+-- task 3: update the email address of a specific teacher
+update teacher set email = 'new.email@example.com' where teacher_id in (select teacher_id from teacher where first_name like 'alice%' and last_name like 'smith%');
+
+-- task 4: delete a specific enrollment record
+delete from enrollments 
+where student_id in (select student_id from students where first_name = 'john' and last_name = 'doe')
+and course_id in (select course_id from courses where course_name like 'database%');
+
+-- task 5: assign a teacher to a course
+update courses 
+set teacher_id = (select teacher_id from teacher where first_name like 'alice%' and last_name like 'smith%') 
+where course_name like 'database%';
+
+-- task 6: delete a student and their enrollments while maintaining referential integrity
+delete from enrollments where student_id in (select student_id from students where first_name = 'john' and last_name = 'doe');
+delete from students where first_name = 'john' and last_name = 'doe';
+
+-- task 7: update the payment amount for a specific payment record
+update payments set amount = 5000 where payment_id in (select payment_id from payments where amount between 4000 and 6000);
