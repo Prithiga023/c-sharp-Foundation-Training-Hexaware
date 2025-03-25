@@ -69,7 +69,8 @@ INSERT INTO Students (student_id, first_name, last_name, date_of_birth, email, p
 INSERT INTO Teacher (teacher_id, first_name, last_name, email) VALUES
 (1, 'Alice', 'Johnson', 'alice.johnson@email.com'),
 (2, 'Michael', 'Williams', 'michael.williams@email.com'),
-(3, 'Sarah', 'Brown', 'sarah.brown@email.com');
+(3, 'Sarah', 'Brown', 'sarah.brown@email.com'),
+(4, 'David', 'Clark', 'david.clark@email.com'); -- Unassigned teacher
 
 -- Insert Sample Courses
 INSERT INTO Courses (course_id, course_name, credits, teacher_id) VALUES
@@ -84,18 +85,22 @@ INSERT INTO Courses (course_id, course_name, credits, teacher_id) VALUES
 (9, 'Statistics', 4, 3),
 (10, 'Economics', 3, 1);
 
--- Insert Sample Enrollments
+-- Insert Sample Enrollments (for multiple enrollments per student)
 INSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date) VALUES
 (1, 1, 1, '2025-03-01'),
-(2, 2, 2, '2025-03-02'),
-(3, 3, 3, '2025-03-03'),
-(4, 4, 4, '2025-03-04'),
-(5, 5, 5, '2025-03-05'),
-(6, 6, 6, '2025-03-06'),
-(7, 7, 7, '2025-03-07'),
-(8, 8, 8, '2025-03-08'),
-(9, 9, 9, '2025-03-09'),
-(10, 10, 10, '2025-03-10');
+(2, 1, 2, '2025-03-02'),
+(3, 2, 3, '2025-03-03'),
+(4, 2, 4, '2025-03-04'),
+(5, 3, 5, '2025-03-05'),
+(6, 3, 6, '2025-03-06'),
+(7, 4, 7, '2025-03-07'),
+(8, 4, 8, '2025-03-08'),
+(9, 5, 9, '2025-03-09'),
+(10, 5, 10, '2025-03-10'),
+(11, 6, 1, '2025-03-11'), -- Multiple courses for student 6
+(12, 6, 2, '2025-03-12'),
+(13, 7, 3, '2025-03-13'),
+(14, 7, 4, '2025-03-14');
 
 -- Insert Sample Payments
 INSERT INTO Payments (payment_id, student_id, amount, payment_date) VALUES
@@ -109,6 +114,7 @@ INSERT INTO Payments (payment_id, student_id, amount, payment_date) VALUES
 (8, 8, 4800.00, '2025-03-12'),
 (9, 9, 5400.00, '2025-03-13'),
 (10, 10, 5000.00, '2025-03-14');
+
 
 -- 4. Retrieve and Manipulate Data
 
