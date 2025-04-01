@@ -1,0 +1,174 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace assignment_4
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Console.WriteLine("Choose a task:");
+                Console.WriteLine("1. Loan Eligibility Check");
+                Console.WriteLine("2. ATM Transaction");
+                Console.WriteLine("3. Compound Interest Calculation");
+                Console.WriteLine("4. Account Balance Check");
+                Console.WriteLine("5. Password Validation");
+                Console.WriteLine("6. Transaction History");
+                Console.WriteLine("7. Exit");
+                Console.Write("Enter your choice: ");
+
+                int choice = Convert.ToInt32(Console.ReadLine());
+                switch (choice)
+                {
+                    case 1:
+                        CheckLoanEligibility();
+                        break;
+                    case 2:
+                        ATMTransaction();
+                        break;
+                    case 3:
+                        CalculateCompoundInterest();
+                        break;
+                    case 4:
+                        CheckAccountBalance();
+                        break;
+                    case 5:
+                        ValidatePassword();
+                        break;
+                    case 6:
+                        TransactionHistory();
+                        break;
+                    case 7:
+                        return;
+                    default:
+                        Console.WriteLine("Invalid choice. Try again.");
+                        break;
+                }
+            }
+        }
+
+        static void CheckLoanEligibility()
+        {
+            Console.Write("Enter Credit Score: ");
+            int creditScore = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Enter Annual Income: ");
+            double income = Convert.ToDouble(Console.ReadLine());
+
+            if (creditScore > 700 && income >= 50000)
+                Console.WriteLine("You are eligible for a loan.");
+            else
+                Console.WriteLine("Sorry, you are not eligible.");
+        }
+
+        static void ATMTransaction()
+        {
+            Console.Write("Enter your current balance: ");
+            double balance = Convert.ToDouble(Console.ReadLine());
+            Console.Write("Choose Transaction (Check/Withdraw/Deposit): ");
+            string action = Console.ReadLine().ToLower();
+
+            if (action == "withdraw")
+            {
+                Console.Write("Enter amount to withdraw: ");
+                double amount = Convert.ToDouble(Console.ReadLine());
+                if (amount % 100 == 0 && amount <= balance)
+                {
+                    balance -= amount;
+                    Console.WriteLine($"Withdrawal successful! New balance: {balance}");
+                }
+                else
+                    Console.WriteLine("Invalid withdrawal amount.");
+            }
+            else if (action == "deposit")
+            {
+                Console.Write("Enter amount to deposit: ");
+                double amount = Convert.ToDouble(Console.ReadLine());
+                balance += amount;
+                Console.WriteLine($"Deposit successful! New balance: {balance}");
+            }
+            else
+            {
+                Console.WriteLine($"Your balance: {balance}");
+            }
+        }
+
+        static void CalculateCompoundInterest()
+        {
+            Console.Write("Enter initial balance: ");
+            double balance = Convert.ToDouble(Console.ReadLine());
+            Console.Write("Enter annual interest rate (%): ");
+            double rate = Convert.ToDouble(Console.ReadLine());
+            Console.Write("Enter number of years: ");
+            int years = Convert.ToInt32(Console.ReadLine());
+
+            double futureBalance = balance * Math.Pow(1 + rate / 100, years);
+            Console.WriteLine($"Future balance after {years} years: {futureBalance:F2}");
+        }
+
+        static void CheckAccountBalance()
+        {
+            Dictionary<string, double> accounts = new Dictionary<string, double>
+        {
+            {"INDB1234", 5000.00},
+            {"INDB5678", 12000.75}
+        };
+
+            while (true)
+            {
+                Console.Write("Enter your account number (Format: INDBxxxx): ");
+                string accNum = Console.ReadLine();
+                if (accounts.ContainsKey(accNum))
+                {
+                    Console.WriteLine($"Your balance: {accounts[accNum]}");
+                    break;
+                }
+                else
+                    Console.WriteLine("Invalid account number. Try again.");
+            }
+        }
+
+        static void ValidatePassword()
+        {
+            Console.Write("Enter a password: ");
+            string password = Console.ReadLine();
+
+            if (password.Length >= 8 &&
+                password.Any(char.IsUpper) &&
+                password.Any(char.IsDigit))
+            {
+                Console.WriteLine("Password is valid.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid password. It must have at least 8 characters, an uppercase letter, and a digit.");
+            }
+        }
+
+        static void TransactionHistory()
+        {
+            List<string> transactions = new List<string>();
+
+            while (true)
+            {
+                Console.Write("Enter transaction (Deposit/Withdraw) or type 'exit' to finish: ");
+                string input = Console.ReadLine();
+                if (input.ToLower() == "exit") break;
+
+                Console.Write("Enter amount: ");
+                double amount = Convert.ToDouble(Console.ReadLine());
+                transactions.Add($"{input}: {amount}");
+            }
+
+            Console.WriteLine("Transaction History:");
+            foreach (var transaction in transactions)
+            {
+                Console.WriteLine(transaction);
+            }
+        }
+    }
+}
