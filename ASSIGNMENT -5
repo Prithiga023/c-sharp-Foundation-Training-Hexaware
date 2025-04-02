@@ -1,0 +1,150 @@
+using System;
+using System.Collections.Generic;
+
+// Student Class
+class Student
+{
+    public int StudentId;
+    public string FirstName;
+    public string LastName;
+    public DateTime Dob;
+    public string Email;
+    public string PhoneNumber;
+    public List<Course> EnrolledCourses = new List<Course>();
+    public List<Payment> Payments = new List<Payment>();
+
+    public Student(int id, string firstName, string lastName, DateTime dob, string email, string phone)
+    {
+        StudentId = id;
+        FirstName = firstName;
+        LastName = lastName;
+        Dob = dob;
+        Email = email;
+        PhoneNumber = phone;
+    }
+
+    public void EnrollInCourse(Course course)
+    {
+        EnrolledCourses.Add(course);
+    }
+
+    public void MakePayment(decimal amount, DateTime date)
+    {
+        Payments.Add(new Payment(this, amount, date));
+    }
+
+    public void DisplayStudentInfo()
+    {
+        Console.WriteLine($"ID: {StudentId}, Name: {FirstName} {LastName}, Email: {Email}, Phone: {PhoneNumber}");
+    }
+}
+
+// Course Class
+class Course
+{
+    public int CourseId;
+    public string Name;
+    public string Code;
+    public Teacher Instructor;
+    public List<Student> EnrolledStudents = new List<Student>();
+
+    public Course(int id, string name, string code, Teacher instructor)
+    {
+        CourseId = id;
+        Name = name;
+        Code = code;
+        Instructor = instructor;
+    }
+}
+
+// Enrollment Class
+class Enrollment
+{
+    public int EnrollmentId;
+    public Student Student;
+    public Course Course;
+    public DateTime EnrollmentDate;
+
+    public Enrollment(int id, Student student, Course course, DateTime date)
+    {
+        EnrollmentId = id;
+        Student = student;
+        Course = course;
+        EnrollmentDate = date;
+    }
+}
+
+// Teacher Class
+class Teacher
+{
+    public int TeacherId;
+    public string FirstName;
+    public string LastName;
+    public string Email;
+
+    public Teacher(int id, string firstName, string lastName, string email)
+    {
+        TeacherId = id;
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+    }
+}
+
+// Payment Class
+class Payment
+{
+    public int PaymentId;
+    public Student Payer;
+    public decimal AmountPaid;
+    public DateTime PaymentDate;
+
+    public Payment(Student payer, decimal amount, DateTime date)
+    {
+        Payer = payer;
+        AmountPaid = amount;
+        PaymentDate = date;
+    }
+}
+
+// SIS Manager Class
+class SIS
+{
+    public List<Student> Students = new List<Student>();
+    public List<Course> Courses = new List<Course>();
+    public List<Enrollment> Enrollments = new List<Enrollment>();
+    public List<Teacher> Teachers = new List<Teacher>();
+    public List<Payment> Payments = new List<Payment>();
+
+    public void EnrollStudentInCourse(Student student, Course course)
+    {
+        student.EnrollInCourse(course);
+        Enrollments.Add(new Enrollment(Enrollments.Count + 1, student, course, DateTime.Now));
+    }
+
+    public void RecordPayment(Student student, decimal amount)
+    {
+        student.MakePayment(amount, DateTime.Now);
+        Payments.Add(new Payment(student, amount, DateTime.Now));
+    }
+}
+
+// Main Program
+class Program
+{
+    static void Main()
+    {
+        SIS system = new SIS();
+        
+        Teacher teacher = new Teacher(1, "John", "Doe", "john@example.com");
+        Course math = new Course(101, "Mathematics", "MTH101", teacher);
+        Student student1 = new Student(1, "Alice", "Smith", new DateTime(2001, 5, 21), "alice@example.com", "9876543210");
+        
+        system.EnrollStudentInCourse(student1, math);
+        system.RecordPayment(student1, 500);
+        
+        student1.DisplayStudentInfo();
+        Console.WriteLine($"Enrolled in: {student1.EnrolledCourses[0].Name}");
+        Console.WriteLine($"Payment of {student1.Payments[0].AmountPaid} recorded on {student1.Payments[0].PaymentDate}");
+    }
+}
