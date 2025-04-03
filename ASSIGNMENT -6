@@ -1,0 +1,224 @@
+using System;
+using System.Collections.Generic;
+
+namespace assignment_4
+{
+    class DuplicateEnrollmentException : Exception
+    {
+        public DuplicateEnrollmentException(string message) : base(message) { }
+    }
+    
+    class CourseNotFoundException : Exception
+    {
+        public CourseNotFoundException(string message) : base(message) { }
+    }
+    
+    class StudentNotFoundException : Exception
+    {
+        public StudentNotFoundException(string message) : base(message) { }
+    }
+    
+    class TeacherNotFoundException : Exception
+    {
+        public TeacherNotFoundException(string message) : base(message) { }
+    }
+    
+    class PaymentValidationException : Exception
+    {
+        public PaymentValidationException(string message) : base(message) { }
+    }
+    
+    class InvalidStudentDataException : Exception
+    {
+        public InvalidStudentDataException(string message) : base(message) { }
+    }
+    
+    class InvalidCourseDataException : Exception
+    {
+        public InvalidCourseDataException(string message) : base(message) { }
+    }
+    
+    class InvalidEnrollmentDataException : Exception
+    {
+        public InvalidEnrollmentDataException(string message) : base(message) { }
+    }
+    
+    class InvalidTeacherDataException : Exception
+    {
+        public InvalidTeacherDataException(string message) : base(message) { }
+    }
+    
+    class InsufficientFundsException : Exception
+    {
+        public InsufficientFundsException(string message) : base(message) { }
+    }
+    
+    class Student
+    {
+        public int studentId;
+        public string firstName;
+        public string lastName;
+        public DateTime dob;
+        public string email;
+        public string phoneNumber;
+        public List<Course> enrolledCourses = new List<Course>();
+        public List<Payment> payments = new List<Payment>();
+
+        public Student(int id, string first, string last, DateTime birthDate, string mail, string phone)
+        {
+            if (string.IsNullOrWhiteSpace(mail) || !mail.Contains("@"))
+                throw new InvalidStudentDataException("Invalid email format.");
+            if (birthDate > DateTime.Now)
+                throw new InvalidStudentDataException("Invalid date of birth.");
+            
+            studentId = id;
+            firstName = first;
+            lastName = last;
+            dob = birthDate;
+            email = mail;
+            phoneNumber = phone;
+        }
+
+        public void enrollInCourse(Course course)
+        {
+            if (enrolledCourses.Contains(course))
+                throw new DuplicateEnrollmentException("Student already enrolled in this course.");
+            enrolledCourses.Add(course);
+        }
+
+        public void makePayment(decimal amount, DateTime date)
+        {
+            if (amount <= 0)
+                throw new PaymentValidationException("Invalid payment amount.");
+            payments.Add(new Payment(this, amount, date));
+        }
+    }
+
+    class Course
+    {
+        public int courseId;
+        public string name;
+        public string code;
+        public Teacher instructor;
+        public List<Student> enrolledStudents = new List<Student>();
+
+        public Course(int id, string courseName, string courseCode, Teacher teacher)
+        {
+            if (string.IsNullOrWhiteSpace(courseCode))
+                throw new InvalidCourseDataException("Invalid course code.");
+            if (teacher == null)
+                throw new InvalidCourseDataException("Instructor cannot be null.");
+            
+            courseId = id;
+            name = courseName;
+            code = courseCode;
+            instructor = teacher;
+        }
+    }
+
+    class Teacher
+    {
+        public int teacherId;
+        public string firstName;
+        public string lastName;
+        public string email;
+
+        public Teacher(int id, string first, string last, string mail)
+        {
+            if (string.IsNullOrWhiteSpace(first) || string.IsNullOrWhiteSpace(last))
+                throw new InvalidTeacherDataException("Invalid teacher name.");
+            if (string.IsNullOrWhiteSpace(mail) || !mail.Contains("@"))
+                throw new InvalidTeacherDataException("Invalid email format.");
+            
+            teacherId = id;
+            firstName = first;
+            lastName = last;
+            email = mail;
+        }
+    }
+
+    class Payment
+    {
+        public int paymentId;
+        public Student payer;
+        public decimal amountPaid;
+        public DateTime paymentDate;
+
+        public Payment(Student student, decimal amount, DateTime date)
+        {
+            if (amount <= 0)
+                throw new PaymentValidationException("Invalid payment amount.");
+            
+            payer = student;
+            amountPaid = amount;
+            paymentDate = date;
+        }
+    }
+
+    class SIS
+    {
+        public List<Student> students = new List<Student>();
+        public List<Course> courses = new List<Course>();
+        public List<Payment> payments = new List<Payment>();
+
+        public void enrollStudentInCourse(Student student, Course course)
+        {
+            if (!students.Contains(student))
+                throw new StudentNotFoundException("Student not found.");
+            if (!courses.Contains(course))
+                throw new CourseNotFoundException("Course not found.");
+            student.enrollInCourse(course);
+        }
+
+        public void recordPayment(Student student, decimal amount)
+        {
+            if (!students.Contains(student))
+                throw new StudentNotFoundException("Student not found.");
+            student.makePayment(amount, DateTime.Now);
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            SIS system = new SIS();
+            
+            Console.Write("Enter teacher first name: ");
+            string tFirstName = Console.ReadLine();
+            Console.Write("Enter teacher last name: ");
+            string tLastName = Console.ReadLine();
+            Console.Write("Enter teacher email: ");
+            string tEmail = Console.ReadLine();
+            Teacher teacher = new Teacher(1, tFirstName, tLastName, tEmail);
+            
+            Console.Write("Enter course name: ");
+            string courseName = Console.ReadLine();
+            Console.Write("Enter course code: ");
+            string courseCode = Console.ReadLine();
+            Course course = new Course(101, courseName, courseCode, teacher);
+            
+            Console.Write("Enter student first name: ");
+            string sFirstName = Console.ReadLine();
+            Console.Write("Enter student last name: ");
+            string sLastName = Console.ReadLine();
+            Console.Write("Enter student email: ");
+            string sEmail = Console.ReadLine();
+            Student student = new Student(1, sFirstName, sLastName, new DateTime(2001, 5, 21), sEmail, "9876543210");
+            
+            system.students.Add(student);
+            system.courses.Add(course);
+            
+            try
+            {
+                system.enrollStudentInCourse(student, course);
+                system.recordPayment(student, 500);
+                Console.WriteLine("Enrollment and payment successful.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+}
