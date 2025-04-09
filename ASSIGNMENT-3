@@ -1,139 +1,72 @@
---Total payments made by a specific student
+-- 1. Total payments made by a specific student (e.g., student_id = 1)
+SELECT s.student_id, s.first_name, s.last_name, SUM(p.amount) AS total_payment
+FROM Students s
+JOIN Payments p ON s.student_id = p.student_id
+WHERE s.student_id = 1
+GROUP BY s.student_id, s.first_name, s.last_name;
 
-select s.student_id, s.first_name, s.last_name, sum(p.amount) as total_payment 
-from students s 
-join payments p on s.student_id = p.student_id 
-where s.student_id = 5
-group by s.student_id, s.first_name, s.last_name;
+-- 2. List of courses with count of students enrolled
+SELECT c.course_name, COUNT(e.student_id) AS enrolled_students
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_name
+ORDER BY enrolled_students DESC;
 
---List of courses with the count of students enrolled in each course
-select c.course_id, c.course_name, count(e.student_id) as student_count 
-from courses c 
-join enrollments e on c.course_id = e.course_id 
-group by c.course_id, c.course_name 
-order by student_count desc;
+-- 3. Students who have not enrolled in any course
+SELECT s.student_id, s.first_name, s.last_name
+FROM Students s
+LEFT JOIN Enrollments e ON s.student_id = e.student_id
+WHERE e.enrollment_id IS NULL;
 
---Students who have not enrolled in any course
-select s.student_id, s.first_name, s.last_name 
-from students s 
-left join enrollments e on s.student_id = e.student_id 
-where e.student_id is null;
+-- 4. Students and the courses they are enrolled in
+SELECT s.first_name, s.last_name, c.course_name
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+JOIN Courses c ON e.course_id = c.course_id;
 
---Students and the courses they are enrolled in
-select s.first_name, s.last_name, c.course_name 
-from students s 
-join enrollments e on s.student_id = e.student_id 
-join courses c on e.course_id = c.course_id 
-order by s.first_name, s.last_name;
+-- 5. Teachers and the courses they are assigned to
+SELECT t.first_name, t.last_name, c.course_name
+FROM Teacher t
+JOIN Courses c ON t.teacher_id = c.teacher_id;
 
---Teachers and the courses they are assigned to
-select t.first_name, t.last_name, c.course_name 
-from teacher t 
-join courses c on t.teacher_id = c.teacher_id 
-order by t.first_name, t.last_name;
+-- 6. Students and enrollment dates for a specific course (e.g., course_id = 2)
+SELECT s.first_name, s.last_name, c.course_name, e.enrollment_date
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+JOIN Courses c ON e.course_id = c.course_id
+WHERE c.course_id = 2;
 
---Students and their enrollment dates for a specific course
-select s.first_name, s.last_name, e.enrollment_date 
-from students s 
-join enrollments e on s.student_id = e.student_id 
-join courses c on e.course_id = c.course_id 
-where c.course_id = 2;
+-- 7. Students who have not made any payments
+SELECT s.student_id, s.first_name, s.last_name
+FROM Students s
+LEFT JOIN Payments p ON s.student_id = p.student_id
+WHERE p.payment_id IS NULL;
 
---students who have not made any payments
-select s.student_id, s.first_name, s.last_name 
-from students s 
-left join payments p on s.student_id = p.student_id 
-where p.student_id is null;
-
-
-
--- Courses with no enrollments
-select c.course_id, c.course_name 
-from courses c 
-left join enrollments e on c.course_id = e.course_id 
-where e.course_id is null;
+INSERT INTO Courses (course_id, course_name, credits, teacher_id)
+VALUES (11, 'Artificial Intelligence', 4, NULL);
 
 
+-- 8. Courses with no enrollments
+SELECT c.course_id, c.course_name
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+WHERE e.enrollment_id IS NULL;
 
---Students enrolled in more than one course
-select s.student_id, s.first_name, s.last_name, count(e.course_id) as course_count 
-from students s 
-join enrollments e on s.student_id = e.student_id 
-group by s.student_id, s.first_name, s.last_name 
-having count(e.course_id) > 1;
+-- 9. Students enrolled in more than one course
+SELECT s.student_id, s.first_name, COUNT(e.course_id) AS course_count
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+GROUP BY s.student_id, s.first_name
+HAVING COUNT(e.course_id) > 1;
+
+INSERT INTO Courses (course_id, course_name, credits, teacher_id)
+VALUES (12, 'Artificial Intelligence', 4, NULL);
+
+-- 10. Teachers not assigned to any courses
+SELECT c.course_id, c.course_name
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+WHERE e.enrollment_id IS NULL;
 
 
--- Teachers who are not assigned to any courses
-select t.teacher_id, t.first_name, t.last_name 
-from teacher t 
-left join courses c on t.teacher_id = c.teacher_id 
-where c.teacher_id is null;
 
-
---average number of students enrolled in each course
-select avg(student_count) as avg_students_per_course 
-from (select course_id, count(student_id) as student_count from enrollments group by course_id) as subquery;
-
---identify the student(s) who made the highest payment
-select student_id, amount, payment_date 
-from payments 
-where amount = (select max(amount) from payments);
-
---retrieve a list of courses with the highest number of enrollments
-select course_id, count(student_id) as enrollment_count 
-from enrollments 
-group by course_id 
-having count(student_id) = (select max(enrollment_count) from (select count(student_id) as enrollment_count from enrollments group by course_id) as subquery);
-
---calculate the total payments made to courses taught by each teacher
-select t.teacher_id, t.first_name, t.last_name, (select sum(p.amount) from payments p where p.student_id in (select e.student_id from enrollments e join courses c on e.course_id = c.course_id where c.teacher_id = t.teacher_id)) as total_payments from teacher t;
-
---identify students who are enrolled in all available courses
-select student_id as student_with_all_courses
-from enrollments 
-group by student_id 
-having count(distinct course_id) = (select count(*) from courses);
-
--- retrieve the names of teachers who have not been assigned to any courses
-select first_name, last_name 
-from teacher 
-where teacher_id not in (select distinct teacher_id from courses where teacher_id is not null);
-
---calculate the average age of all students
-select avg(age) as average_age 
-from (
-    select datediff(year, date_of_birth, getdate()) as age 
-    from students
-) as age_calculation;
-
---identify courses with no enrollments
-select course_id, course_name 
-from courses 
-where course_id not in (select distinct course_id from enrollments);
-
---calculate total payments made by each student for each course
-select e.student_id, e.course_id, (select sum(amount) from payments p where p.student_id = e.student_id) as total_payment from enrollments e group by e.student_id, e.course_id;
-
---identify students who have made more than one payment
-select student_id 
-from payments 
-group by student_id 
-having count(payment_id) > 1;
-
---calculate total payments made by each student
-select s.student_id, s.first_name, s.last_name, sum(p.amount) as total_payments 
-from students s 
-join payments p on s.student_id = p.student_id 
-group by s.student_id, s.first_name, s.last_name;
-
--- retrieve a list of course names along with the count of students enrolled
-select c.course_name, count(e.student_id) as student_count 
-from courses c 
-left join enrollments e on c.course_id = e.course_id 
-group by c.course_name;
-
---calculate the average payment amount made by students
-select s.student_id, s.first_name, s.last_name, avg(p.amount) as avg_payment 
-from students s 
-join payments p on s.student_id = p.student_id 
-group by s.student_id, s.first_name, s.last_name;
