@@ -1,29 +1,43 @@
--- task 1: insert a new student into the "students" table
-insert into students (first_name, last_name, date_of_birth, email, phone_number) 
-values ('john', 'doe', '1995-08-15', 'john.doe@example.com', '1234567890');
+-- 1. Insert a New Student (John Doe, different DOB and Email)
+INSERT INTO Students (student_id, first_name, last_name, date_of_birth, email, phone_number)
+VALUES (11, 'John', 'Doe', '1995-08-15', 'john.doe@example.com', '1234567890');
 
--- task 2: enroll a student in a course
-insert into enrollments (student_id, course_id, enrollment_date) 
-select s.student_id, c.course_id, getdate() 
-from students s, courses c 
-where s.first_name = 'john' and s.last_name = 'doe' and c.course_name like 'database%';
+-- 2. Enroll the New Student into Course ID 1 (Mathematics)
+INSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date)
+VALUES (15, 11, 1, '2025-04-09');
 
--- task 3: update the email address of a specific teacher
-update teacher set email = 'new.email@example.com' where teacher_id in (select teacher_id from teacher where first_name like 'alice%' and last_name like 'smith%');
+-- 3. Update Email Address of a Teacher (Teacher ID 2)
+UPDATE Teacher
+SET email = 'michael.updated@email.com'
+WHERE teacher_id = 2;
 
--- task 4: delete a specific enrollment record
-delete from enrollments 
-where student_id in (select student_id from students where first_name = 'john' and last_name = 'doe')
-and course_id in (select course_id from courses where course_name like 'database%');
+-- 4. Delete Specific Enrollment (Student ID 11, Course ID 1)
+DELETE FROM Enrollments
+WHERE student_id = 11 AND course_id = 1;
 
--- task 5: assign a teacher to a course
-update courses 
-set teacher_id = (select teacher_id from teacher where first_name like 'alice%' and last_name like 'smith%') 
-where course_name like 'database%';
+-- 5. Assign Teacher ID 4 to Course ID 6 (History)
+UPDATE Courses
+SET teacher_id = 4
+WHERE course_id = 6;
 
--- task 6: delete a student and their enrollments while maintaining referential integrity
-delete from enrollments where student_id in (select student_id from students where first_name = 'john' and last_name = 'doe');
-delete from students where first_name = 'john' and last_name = 'doe';
+-- 6. Delete Student (ID 10) and Cascade Delete Their Enrollments and Payments
+DELETE FROM Students
+WHERE student_id = 10;
 
--- task 7: update the payment amount for a specific payment record
-update payments set amount = 5000 where payment_id in (select payment_id from payments where amount between 4000 and 6000);
+-- 7. Update Payment Amount (Payment ID 3 → 6000.00)
+UPDATE Payments
+SET amount = 6000.00
+WHERE payment_id = 3;
+
+-- 8. Select Students Born Between 2000 and 2002
+SELECT * FROM Students
+WHERE date_of_birth BETWEEN '2000-01-01' AND '2002-12-31';
+
+-- 9. Select Students Whose Email Ends with 'email.com'
+SELECT * FROM Students
+WHERE email LIKE '%@email.com';
+
+-- 10. Select Students with First Name Starting with 'J' and Phone Number Starting with '9'
+SELECT * FROM Students
+WHERE first_name LIKE 'J%' AND phone_number LIKE '9%';
+
