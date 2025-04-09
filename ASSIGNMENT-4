@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace assignment_4
+namespace SISBankingModule
 {
     internal class Program
     {
@@ -12,163 +6,224 @@ namespace assignment_4
         {
             while (true)
             {
-                Console.WriteLine("Choose a task:");
+                Console.WriteLine("\n=== Welcome to SIS Banking Menu ===");
                 Console.WriteLine("1. Loan Eligibility Check");
                 Console.WriteLine("2. ATM Transaction");
-                Console.WriteLine("3. Compound Interest Calculation");
-                Console.WriteLine("4. Account Balance Check");
-                Console.WriteLine("5. Password Validation");
+                Console.WriteLine("3. Compound Interest");
+                Console.WriteLine("4. Account Balance Checker");
+                Console.WriteLine("5. Password Validator");
                 Console.WriteLine("6. Transaction History");
                 Console.WriteLine("7. Exit");
-                Console.Write("Enter your choice: ");
 
-                int choice = Convert.ToInt32(Console.ReadLine());
-                switch (choice)
+                Console.Write("Enter your choice: ");
+                string input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int option))
                 {
-                    case 1:
-                        CheckLoanEligibility();
-                        break;
-                    case 2:
-                        ATMTransaction();
-                        break;
-                    case 3:
-                        CalculateCompoundInterest();
-                        break;
-                    case 4:
-                        CheckAccountBalance();
-                        break;
-                    case 5:
-                        ValidatePassword();
-                        break;
-                    case 6:
-                        TransactionHistory();
-                        break;
-                    case 7:
-                        return;
-                    default:
-                        Console.WriteLine("Invalid choice. Try again.");
-                        break;
+                    Console.WriteLine("Please enter a valid number.");
+                    continue;
+                }
+
+                if (option == 1)
+                    LoanEligibility();
+                else if (option == 2)
+                    ATM();
+                else if (option == 3)
+                    CompoundInterest();
+                else if (option == 4)
+                    CheckBalance();
+                else if (option == 5)
+                    PasswordCheck();
+                else if (option == 6)
+                    TransactionLog();
+                else if (option == 7)
+                {
+                    Console.WriteLine("Thank you. Exiting the system.");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid option. Try again.");
                 }
             }
         }
 
-        static void CheckLoanEligibility()
+        static void LoanEligibility()
         {
+            Console.WriteLine("\n--- Loan Eligibility Check ---");
+
             Console.Write("Enter Credit Score: ");
-            int creditScore = Convert.ToInt32(Console.ReadLine());
+            int credit = Convert.ToInt32(Console.ReadLine());
+
             Console.Write("Enter Annual Income: ");
             double income = Convert.ToDouble(Console.ReadLine());
 
-            if (creditScore > 700 && income >= 50000)
+            if (credit > 700 && income >= 50000)
                 Console.WriteLine("You are eligible for a loan.");
             else
-                Console.WriteLine("Sorry, you are not eligible.");
+                Console.WriteLine("You are not eligible for a loan.");
         }
 
-        static void ATMTransaction()
+        static void ATM()
         {
-            Console.Write("Enter your current balance: ");
+            Console.WriteLine("\n--- ATM Transaction ---");
+
+            Console.Write("Enter your balance: ");
             double balance = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Choose Transaction (Check/Withdraw/Deposit): ");
+
+            Console.Write("Choose action (Check / Withdraw / Deposit): ");
             string action = Console.ReadLine().ToLower();
 
             if (action == "withdraw")
             {
                 Console.Write("Enter amount to withdraw: ");
                 double amount = Convert.ToDouble(Console.ReadLine());
-                if (amount % 100 == 0 && amount <= balance)
+
+                if ((amount % 100 == 0 || amount % 500 == 0) && amount <= balance)
                 {
                     balance -= amount;
-                    Console.WriteLine($"Withdrawal successful! New balance: {balance}");
+                    Console.WriteLine("Withdrawal successful. New balance: " + balance);
                 }
                 else
+                {
                     Console.WriteLine("Invalid withdrawal amount.");
+                }
             }
             else if (action == "deposit")
             {
                 Console.Write("Enter amount to deposit: ");
                 double amount = Convert.ToDouble(Console.ReadLine());
+
                 balance += amount;
-                Console.WriteLine($"Deposit successful! New balance: {balance}");
+                Console.WriteLine("Deposit successful. New balance: " + balance);
+            }
+            else if (action == "check")
+            {
+                Console.WriteLine("Your current balance is: " + balance);
             }
             else
             {
-                Console.WriteLine($"Your balance: {balance}");
+                Console.WriteLine("Invalid option.");
             }
         }
 
-        static void CalculateCompoundInterest()
+        static void CompoundInterest()
         {
-            Console.Write("Enter initial balance: ");
-            double balance = Convert.ToDouble(Console.ReadLine());
-            Console.Write("Enter annual interest rate (%): ");
+            Console.WriteLine("\n--- Compound Interest ---");
+
+            Console.Write("Enter initial amount: ");
+            double principal = Convert.ToDouble(Console.ReadLine());
+
+            Console.Write("Enter interest rate: ");
             double rate = Convert.ToDouble(Console.ReadLine());
+
             Console.Write("Enter number of years: ");
             int years = Convert.ToInt32(Console.ReadLine());
 
-            double futureBalance = balance * Math.Pow(1 + rate / 100, years);
-            Console.WriteLine($"Future balance after {years} years: {futureBalance:F2}");
+            double result = principal * Math.Pow(1 + rate / 100, years);
+            Console.WriteLine("Future value: " + result.ToString("F2"));
         }
 
-        static void CheckAccountBalance()
+        static void CheckBalance()
         {
-            Dictionary<string, double> accounts = new Dictionary<string, double>
-        {
-            {"INDB1234", 5000.00},
-            {"INDB5678", 12000.75}
-        };
+            Console.WriteLine("\n--- Account Balance Checker ---");
+
+            Dictionary<string, double> accounts = new Dictionary<string, double>()
+            {
+                { "INDB1001", 10000.00 },
+                { "INDB2002", 15000.50 },
+                { "INDB3003", 8200.75 }
+            };
 
             while (true)
             {
-                Console.Write("Enter your account number (Format: INDBxxxx): ");
-                string accNum = Console.ReadLine();
-                if (accounts.ContainsKey(accNum))
+                Console.Write("Enter your account number: ");
+                string acc = Console.ReadLine();
+
+                if (acc.StartsWith("INDB") && acc.Length == 8 && int.TryParse(acc.Substring(4), out _))
                 {
-                    Console.WriteLine($"Your balance: {accounts[accNum]}");
-                    break;
+                    if (accounts.ContainsKey(acc))
+                    {
+                        Console.WriteLine("Your balance is: " + accounts[acc]);
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Account not found.");
+                    }
                 }
                 else
-                    Console.WriteLine("Invalid account number. Try again.");
+                {
+                    Console.WriteLine("Invalid format. Use INDB followed by 4 digits.");
+                }
             }
         }
 
-        static void ValidatePassword()
+        static void PasswordCheck()
         {
+            Console.WriteLine("\n--- Password Validation ---");
+
             Console.Write("Enter a password: ");
             string password = Console.ReadLine();
 
-            if (password.Length >= 8 &&
-                password.Any(char.IsUpper) &&
-                password.Any(char.IsDigit))
-            {
+            bool validLength = password.Length >= 8;
+            bool hasUpper = password.Any(char.IsUpper);
+            bool hasDigit = password.Any(char.IsDigit);
+
+            if (validLength && hasUpper && hasDigit)
                 Console.WriteLine("Password is valid.");
-            }
             else
-            {
-                Console.WriteLine("Invalid password. It must have at least 8 characters, an uppercase letter, and a digit.");
-            }
+                Console.WriteLine("Password is invalid. Must be 8+ characters, have 1 uppercase, and 1 digit.");
         }
 
-        static void TransactionHistory()
+        static void TransactionLog()
         {
+            Console.WriteLine("\n--- Transaction Log ---");
+
             List<string> transactions = new List<string>();
+            double balance = 1000.00;
 
             while (true)
             {
-                Console.Write("Enter transaction (Deposit/Withdraw) or type 'exit' to finish: ");
-                string input = Console.ReadLine();
-                if (input.ToLower() == "exit") break;
+                Console.Write("Enter transaction (Deposit / Withdraw) or type 'exit': ");
+                string type = Console.ReadLine().ToLower();
+
+                if (type == "exit")
+                    break;
 
                 Console.Write("Enter amount: ");
                 double amount = Convert.ToDouble(Console.ReadLine());
-                transactions.Add($"{input}: {amount}");
+
+                if (type == "deposit")
+                {
+                    balance += amount;
+                    transactions.Add("Deposited: " + amount);
+                }
+                else if (type == "withdraw")
+                {
+                    if (amount <= balance)
+                    {
+                        balance -= amount;
+                        transactions.Add("Withdrew: " + amount);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not enough balance.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid transaction type.");
+                }
             }
 
-            Console.WriteLine("Transaction History:");
-            foreach (var transaction in transactions)
+            Console.WriteLine("\nYour Transactions:");
+            foreach (var t in transactions)
             {
-                Console.WriteLine(transaction);
+                Console.WriteLine(t);
             }
+
+            Console.WriteLine("Final balance: " + balance);
         }
     }
 }
