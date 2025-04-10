@@ -1,0 +1,87 @@
+
+insert into Student (StudentId, Name, Age, Email)
+values (1, 'John Doe', 25, 'john@example.com');
+
+insert into Payment (PaymentId, StudentId, Amount, DatePaid)
+values (1, 1, 1000.00, '2025-04-10');
+
+
+select s.Name, sum(p.Amount) as TotalPayments
+from Student s
+join Payment p on s.StudentId = p.StudentId
+where s.StudentId = 1
+group by s.Name;
+
+select c.CourseName, count(e.StudentId) as TotalStudents
+from Course c
+left join Enrollment e on c.CourseId = e.CourseId
+group by c.CourseName;
+
+select s.Name
+from Student s
+left join Enrollment e on s.StudentId = e.StudentId
+where e.EnrollmentId is null;
+
+insert into Student (StudentId, Name, Age, Email)
+values (1, 'Alice', 21, 'alice@example.com');
+
+insert into Course (CourseId, CourseName, Credits)
+values (1, 'Database Systems', 3);
+
+insert into Enrollment (EnrollmentId, StudentId, CourseId, Grade)
+values (1, 1, 1, 'A');
+
+
+select s.Name as StudentName, c.CourseName
+from Student s
+join Enrollment e on s.StudentId = e.StudentId
+join Course c on e.CourseId = c.CourseId;
+
+
+select t.Name as TeacherName, c.CourseName
+from Teacher t
+join Course c on t.TeacherId = c.TeacherId;
+
+select s.Name, c.CourseName
+from Student s
+join Enrollment e on s.StudentId = e.StudentId
+join Course c on e.CourseId = c.CourseId
+where c.CourseId = 1;
+
+
+select s.Name
+from Student s
+left join Payment p on s.StudentId = p.StudentId
+where p.PaymentId is null;
+
+insert into Course (CourseId, CourseName, Credits)
+values (999, 'Cloud Computing', 4);
+
+
+select c.CourseName
+from Course c
+left join Enrollment e on c.CourseId = e.CourseId
+where e.EnrollmentId is null;
+
+-- Assuming student with ID 1 and courses with ID 1 and 2 exist
+insert into Enrollment (EnrollmentId, StudentId, CourseId, Grade)
+values (101, 1, 1, 'A');
+
+insert into Enrollment (EnrollmentId, StudentId, CourseId, Grade)
+values (102, 1, 2, 'B');
+
+
+select s.Name, count(e.CourseId) as CourseCount
+from Student s
+join Enrollment e on s.StudentId = e.StudentId
+group by s.Name
+having count(e.CourseId) > 1;
+
+insert into Teacher (TeacherId, Name, Department)
+values (1000, 'sajitha', 'Math');
+
+
+select t.Name
+from Teacher t
+left join Course c on t.TeacherId = c.TeacherId
+where c.CourseId is null;
