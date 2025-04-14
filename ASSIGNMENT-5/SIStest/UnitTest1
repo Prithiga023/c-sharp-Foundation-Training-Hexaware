@@ -1,0 +1,64 @@
+using NUnit.Framework;
+using System;
+using demonew;  // Replace with your actual main project namespace
+
+namespace SIStest
+{
+    [TestFixture]
+    public class SISTests
+    {
+        private SIS system;
+        private Student student;
+        private Course course;
+        private Teacher teacher;
+
+        [SetUp]
+        public void Setup()
+        {
+            system = new SIS();
+
+            teacher = new Teacher(1, "John", "Doe", "john@example.com");
+            course = new Course(101, "Mathematics", "MTH101");
+            student = new Student(1, "Alice", "Smith", new DateTime(2000, 1, 1), "alice@example.com", "1234567890");
+
+            system.Teachers.Add(teacher);
+            system.Courses.Add(course);
+            system.Students.Add(student);
+
+            system.AssignTeacherToCourse(teacher, course);
+        }
+
+        [Test]
+        public void TestEnrollStudentInCourse()
+        {
+            system.EnrollStudentInCourse(student, course);
+
+            var enrolledCourses = student.GetEnrolledCourses();
+            var enrolledStudents = course.GetEnrollments();
+
+            Assert.That(enrolledCourses, Has.Member(course));
+            Assert.That(enrolledStudents, Has.Member(student));
+        }
+
+        [Test]
+        public void TestRecordPayment()
+        {
+            system.RecordPayment(student, 1500m, DateTime.Today);
+
+            var payments = student.GetPaymentHistory();
+
+            Assert.That(payments.Count, Is.EqualTo(1));
+            Assert.That(payments[0].AmountPaid, Is.EqualTo(1500m));
+        }
+
+        [Test]
+        public void TestAssignTeacherToCourse()
+        {
+            var assigned = course.GetTeacher();
+            var assignedCourses = teacher.GetAssignedCourses();
+
+            Assert.That(assigned, Is.SameAs(teacher));
+            Assert.That(assignedCourses, Has.Member(course));
+        }
+    }
+}
