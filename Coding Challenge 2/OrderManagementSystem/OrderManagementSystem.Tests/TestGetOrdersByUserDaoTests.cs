@@ -6,14 +6,14 @@ using System.Collections.Generic; // Ensure this is included for List<T>
 
 namespace OrderManagementSystem.Tests
 {
-    public class TestGetOrdersByUserDaoTests // Renamed class to avoid conflict  
+    public class TestGetOrdersByUserDaoTests  
     {
         private IGetOrdersByUserDao _getOrdersByUserDao;
 
         [SetUp]
         public void Setup()
         {
-            _getOrdersByUserDao = new GetOrdersByUserDao(); // Ensure GetOrdersByUserDao implements IGetOrdersByUserDao  
+            _getOrdersByUserDao = new GetOrdersByUserDao();  
         }
 
         [Test]
