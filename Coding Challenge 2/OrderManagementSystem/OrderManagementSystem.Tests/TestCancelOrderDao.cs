@@ -19,9 +19,9 @@ namespace OrderManagementSystem.Tests
         public void CancelOrder_ShouldReturnTrue_ForValidOrder()
         {
             var userId = 1001;
-            var orderId = 101; // Ensure this order exists before running the test
+            var orderId = 101;
             var result = _cancelOrderDao.CancelOrder(userId, orderId);
-            Assert.That(result, Is.True); // Updated to use Assert.That with Is.True
+            Assert.That(result, Is.True);
         }
     }
 }
