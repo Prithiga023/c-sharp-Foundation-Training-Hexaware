@@ -1,0 +1,142 @@
+
+
+-- 1. Victims Table
+CREATE TABLE Victims (
+    VictimID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DateOfBirth DATE,
+    Gender VARCHAR(10),
+    Address VARCHAR(255),
+    PhoneNumber VARCHAR(20)
+);
+
+-- 2. Suspects Table
+CREATE TABLE Suspects (
+    SuspectID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    DateOfBirth DATE,
+    Gender VARCHAR(10),
+    Address VARCHAR(255),
+    PhoneNumber VARCHAR(20)
+);
+
+-- 3. Law Enforcement Agencies Table
+CREATE TABLE LawEnforcementAgencies (
+    AgencyID INT PRIMARY KEY IDENTITY(1,1),
+    AgencyName VARCHAR(100),
+    Jurisdiction VARCHAR(100),
+    ContactInfo VARCHAR(100)
+);
+
+-- 4. Incident Table
+CREATE TABLE Incident (
+    IncidentID INT PRIMARY KEY IDENTITY(1,1),
+    IncidentType VARCHAR(50),
+    IncidentDate DATE,
+    Location VARCHAR(255),
+    Description TEXT,
+    Status VARCHAR(50),
+    VictimID INT,
+    SuspectID INT,
+    AgencyID INT,
+    FOREIGN KEY (VictimID) REFERENCES Victims(VictimID),
+    FOREIGN KEY (SuspectID) REFERENCES Suspects(SuspectID),
+    FOREIGN KEY (AgencyID) REFERENCES LawEnforcementAgencies(AgencyID)
+);
+
+-- 5. Officers Table
+CREATE TABLE Officers (
+    OfficerID INT PRIMARY KEY IDENTITY(1,1),
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    BadgeNumber VARCHAR(20),
+    Rank VARCHAR(20),
+    ContactInfo VARCHAR(100),
+    AgencyID INT,
+    FOREIGN KEY (AgencyID) REFERENCES LawEnforcementAgencies(AgencyID)
+);
+
+-- 6. Evidence Table
+CREATE TABLE Evidence (
+    EvidenceID INT PRIMARY KEY IDENTITY(1,1),
+    Description TEXT,
+    LocationFound VARCHAR(255),
+    IncidentID INT,
+    FOREIGN KEY (IncidentID) REFERENCES Incident(IncidentID)
+);
+
+-- 7. Reports Table
+CREATE TABLE Reports (
+    ReportID INT PRIMARY KEY IDENTITY(1,1),
+    IncidentID INT,
+    ReportingOfficer INT,
+    ReportDate DATE,
+    ReportDetails TEXT,
+    Status VARCHAR(50),
+    FOREIGN KEY (IncidentID) REFERENCES Incident(IncidentID),
+    FOREIGN KEY (ReportingOfficer) REFERENCES Officers(OfficerID)
+);
+INSERT INTO LawEnforcementAgencies (AgencyName, Jurisdiction, ContactInfo)
+VALUES 
+('Chennai City Police', 'Chennai', 'chennai-police@gov.in'),
+('Delhi Police Department', 'Delhi NCR', 'delhi-police@gov.in'),
+('Mumbai Police', 'Mumbai', 'mumbai-police@gov.in'),
+('Hyderabad Police', 'Hyderabad', 'hyd-police@gov.in'),
+('Bengaluru City Police', 'Bengaluru', 'bengaluru-police@gov.in');
+
+-- Insert Victims
+INSERT INTO Victims (FirstName, LastName, DateOfBirth, Gender, Address, PhoneNumber)
+VALUES 
+('Ravi', 'Kumar', '1995-08-12', 'Male', '12 Gandhi Street, Chennai', '9876543210'),
+('Meena', 'Sharma', '1998-03-22', 'Female', '44 MG Road, Bengaluru', '9911223344'),
+('Vikram', 'Patel', '1990-10-10', 'Male', '12 Nariman Point, Mumbai', '9898989898'),
+('Anjali', 'Reddy', '1997-07-30', 'Female', '15 Jubilee Hills, Hyderabad', '9999888877'),
+('Deepak', 'Singh', '1985-04-19', 'Male', '9 RK Puram, Delhi', '9898765432');
+
+-- Insert Suspects
+INSERT INTO Suspects (FirstName, LastName, DateOfBirth, Gender, Address, PhoneNumber)
+VALUES 
+('Arjun', 'Rao', '1987-11-05', 'Male', '6 Nehru Nagar, Hyderabad', '8899776655'),
+('Pooja', 'Verma', '1990-01-18', 'Female', '55 Laxmi Nagar, Delhi', '9988776655'),
+('Rajesh', 'Singh', '1983-02-20', 'Male', '10 Fort Road, Mumbai', '9977554433'),
+('Priya', 'Jain', '1995-05-05', 'Female', '25 MG Road, Bengaluru', '9822334455'),
+('Sandeep', 'Kumar', '1988-06-14', 'Male', '18 Lakeview, Chennai', '9811223344');
+
+-- Insert Incidents
+INSERT INTO Incident (IncidentType, IncidentDate, Location, Description, Status, VictimID, SuspectID, AgencyID)
+VALUES 
+('Theft', '2025-03-03', 'T. Nagar, Chennai', 'Gold chain stolen from crowded area', 'Open', 1, 1, 1),
+('Robbery', '2025-03-05', 'Connaught Place, Delhi', 'ATM machine broken and robbed', 'Under Investigation', 2, 2, 2),
+('Assault', '2025-03-10', 'Jayanagar, Bengaluru', 'Altercation turned violent in a park', 'Closed', 1, 3, 3),
+('Burglary', '2025-03-12', 'Vasant Vihar, Delhi', 'House robbed in the night', 'Under Investigation', 3, 4, 2),
+('Murder', '2025-03-15', 'Madhapur, Hyderabad', 'Suspected murder of a businessman', 'Open', 4, 5, 4);
+
+-- Insert Officers
+INSERT INTO Officers (FirstName, LastName, BadgeNumber, Rank, ContactInfo, AgencyID)
+VALUES 
+('Arvind', 'Singh', 'A123', 'Inspector', 'arvind@chennai-police.gov.in', 1),
+('Deepa', 'Rao', 'D456', 'Sub Inspector', 'deepa@delhi-police.gov.in', 2),
+('Vikrant', 'Patel', 'V789', 'Officer', 'vikrant@mumbai-police.gov.in', 3),
+('Sita', 'Nair', 'S101', 'Constable', 'sita@hyd-police.gov.in', 4),
+('Karan', 'Mehra', 'K202', 'Inspector', 'karan@bengaluru-police.gov.in', 5);
+-- Insert Evidence
+INSERT INTO Evidence (Description, LocationFound, IncidentID)
+VALUES 
+('Gold chain found near the crime scene', 'T. Nagar, Chennai', 1),
+('ATM card found at the crime scene', 'Connaught Place, Delhi', 2),
+('Broken glass and blood stains', 'Jayanagar, Bengaluru', 3),
+('Robbery tools found at the suspect’s house', 'Vasant Vihar, Delhi', 4),
+('Weapon used in the murder', 'Madhapur, Hyderabad', 5);
+
+-- Insert Reports
+INSERT INTO Reports (IncidentID, ReportingOfficer, ReportDate, ReportDetails, Status)
+VALUES 
+(1, 1, '2025-03-04', 'Report on the theft incident involving a gold chain theft.', 'Open'),
+(2, 2, '2025-03-06', 'Report on the ATM robbery incident.', 'Under Investigation'),
+(3, 3, '2025-03-11', 'Report on the assault incident in a park.', 'Closed'),
+(4, 4, '2025-03-13', 'Report on the burglary in Vasant Vihar.', 'Under Investigation'),
+(5, 5, '2025-03-16', 'Report on the suspected murder in Madhapur.', 'Open');
+
+SELECT * FROM Incident
