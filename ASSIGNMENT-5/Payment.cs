@@ -8,22 +8,16 @@ namespace demonew
 {
     public class Payment
     {
-        public int PaymentId;
-        public Student Payer;
-        public decimal AmountPaid;
-        public DateTime PaymentDate;
+        public Student Student { get; }
+        public decimal Amount { get; }
+        public DateTime PaymentDate { get; }
 
-        public Payment(int id, Student payer, decimal amount, DateTime date)
+        public Payment(Student student, decimal amount, DateTime paymentDate)
         {
-            PaymentId = id;
-            Payer = payer;
-            AmountPaid = amount;
-            PaymentDate = date;
+            Student = student;
+            Amount = amount;
+            PaymentDate = paymentDate;
         }
-
-        public Student GetStudent() => Payer;
-        public decimal GetPaymentAmount() => AmountPaid;
-        public DateTime GetPaymentDate() => PaymentDate;
     }
 }
 
