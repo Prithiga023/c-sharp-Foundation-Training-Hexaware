@@ -8,39 +8,44 @@ namespace demonew
 {
     public class Course
     {
-        public int CourseId;
-        public string Name;
-        public string Code;
-        public Teacher Instructor;
-        public List<Student> EnrolledStudents = new List<Student>();
+        public int CourseId { get; set; }
+        public string CourseName { get; set; }
+        public string CourseCode { get; set; }
+        private Teacher courseTeacher;
+        private List<Student> enrolledStudents = new List<Student>();
 
-        public Course(int id, string name, string code)
+        public Course(int courseId, string courseName, string courseCode)
         {
-            CourseId = id;
-            Name = name;
-            Code = code;
+            CourseId = courseId;
+            CourseName = courseName;
+            CourseCode = courseCode;
         }
 
+        // Assign a teacher to the course
         public void AssignTeacher(Teacher teacher)
         {
-            Instructor = teacher;
-            teacher.AssignedCourses.Add(this);
+            courseTeacher = teacher;
         }
 
-        public void UpdateCourseInfo(string code, string name, string instructorName)
+        // Get the assigned teacher
+        public Teacher GetTeacher()
         {
-            Code = code;
-            Name = name;
+            return courseTeacher;
         }
 
-        public void DisplayCourseInfo()
+        // Enroll a student in the course
+        public void AddStudent(Student student)
         {
-            Console.WriteLine($"ID: {CourseId}, Name: {Name}, Code: {Code}, Instructor: {Instructor?.FirstName} {Instructor?.LastName}");
+            if (!enrolledStudents.Contains(student))
+            {
+                enrolledStudents.Add(student);
+            }
         }
 
-        public List<Student> GetEnrollments() => EnrolledStudents;
-        public Teacher GetTeacher() => Instructor;
+        // Get a list of students enrolled in the course
+        public List<Student> GetEnrollments()
+        {
+            return enrolledStudents;
+        }
     }
 }
-
-
