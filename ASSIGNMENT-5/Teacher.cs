@@ -8,33 +8,34 @@ namespace demonew
 {
     public class Teacher
     {
-        public int TeacherId;
-        public string FirstName;
-        public string LastName;
-        public string Email;
-        public List<Course> AssignedCourses = new List<Course>();
+        public int TeacherId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        private List<Course> assignedCourses = new List<Course>();
 
-        public Teacher(int id, string firstName, string lastName, string email)
+        public Teacher(int teacherId, string firstName, string lastName, string email)
         {
-            TeacherId = id;
+            TeacherId = teacherId;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
         }
 
-        public void UpdateTeacherInfo(string name, string email, string expertise)
+        // Assign course to teacher
+        public void AssignCourse(Course course)
         {
-            FirstName = name.Split(' ')[0];
-            LastName = name.Split(' ')[1];
-            Email = email;
+            if (!assignedCourses.Contains(course))
+            {
+                assignedCourses.Add(course);
+            }
         }
 
-        public void DisplayTeacherInfo()
+        // Get the courses assigned to the teacher
+        public List<Course> GetAssignedCourses()
         {
-            Console.WriteLine($"ID: {TeacherId}, Name: {FirstName} {LastName}, Email: {Email}");
+            return assignedCourses;
         }
-
-        public List<Course> GetAssignedCourses() => AssignedCourses;
     }
 }
 
