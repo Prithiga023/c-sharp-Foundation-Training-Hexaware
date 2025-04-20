@@ -17,25 +17,31 @@ namespace SIStest
         {
             system = new SIS();
 
+            // Creating sample objects
             teacher = new Teacher(1, "John", "Doe", "john@example.com");
             course = new Course(101, "Mathematics", "MTH101");
             student = new Student(1, "Alice", "Smith", new DateTime(2000, 1, 1), "alice@example.com", "1234567890");
 
+            // Adding teacher, course, and student to the system
             system.Teachers.Add(teacher);
             system.Courses.Add(course);
             system.Students.Add(student);
 
+            // Assign teacher to the course
             system.AssignTeacherToCourse(teacher, course);
         }
 
         [Test]
         public void TestEnrollStudentInCourse()
         {
+            // Enroll student in the course
             system.EnrollStudentInCourse(student, course);
 
-            var enrolledCourses = student.GetEnrolledCourses();
+            // Get enrolled courses and students
+            var enrolledCourses = student.GetEnrollments();
             var enrolledStudents = course.GetEnrollments();
 
+            // Test if the student is enrolled in the course and vice versa
             Assert.That(enrolledCourses, Has.Member(course));
             Assert.That(enrolledStudents, Has.Member(student));
         }
@@ -48,16 +54,18 @@ namespace SIStest
             var payments = student.GetPaymentHistory();
 
             Assert.That(payments.Count, Is.EqualTo(1));
-            Assert.That(payments[0].AmountPaid, Is.EqualTo(1500m));
+            Assert.That(payments[0].Amount, Is.EqualTo(1500m)); // Use Amount instead of AmountPaid
         }
 
         [Test]
         public void TestAssignTeacherToCourse()
         {
-            var assigned = course.GetTeacher();
+            // Check if teacher is assigned to the course
+            var assignedTeacher = course.GetTeacher();
             var assignedCourses = teacher.GetAssignedCourses();
 
-            Assert.That(assigned, Is.SameAs(teacher));
+            // Test if the teacher is correctly assigned
+            Assert.That(assignedTeacher, Is.SameAs(teacher));
             Assert.That(assignedCourses, Has.Member(course));
         }
     }
