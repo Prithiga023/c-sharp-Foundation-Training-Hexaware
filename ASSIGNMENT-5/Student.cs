@@ -1,62 +1,70 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace demonew
 {
     public class Student
     {
-        public int StudentId;
-        public string FirstName;
-        public string LastName;
-        public DateTime Dob;
-        public string Email;
-        public string PhoneNumber;
-        public List<Course> EnrolledCourses = new List<Course>();
-        public List<Payment> Payments = new List<Payment>();
+        public int StudentId { get; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public string Email { get; private set; }
+        private List<Course> enrolledCourses = new List<Course>();
+        private List<Payment> paymentHistory = new List<Payment>();
 
-        public Student(int id, string firstName, string lastName, DateTime dob, string email, string phone)
+        public Student(int studentId, string firstName, string lastName, DateTime dob, string email, string phone)
         {
-            StudentId = id;
+            ValidateStudentData(firstName, lastName, email);
+            StudentId = studentId;
             FirstName = firstName;
             LastName = lastName;
-            Dob = dob;
             Email = email;
-            PhoneNumber = phone;
         }
 
+        // Enroll the student in a course
         public void EnrollInCourse(Course course)
         {
-            if (!EnrolledCourses.Contains(course))
+            if (!enrolledCourses.Contains(course))
             {
-                EnrolledCourses.Add(course);
-                course.EnrolledStudents.Add(this);
+                enrolledCourses.Add(course);
+                course.AddStudent(this);
             }
         }
 
-        public void UpdateStudentInfo(string firstName, string lastName, DateTime dob, string email, string phoneNumber)
+        // Get all the courses the student is enrolled in
+        public List<Course> GetEnrollments()
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Dob = dob;
-            Email = email;
-            PhoneNumber = phoneNumber;
+            return enrolledCourses;
         }
 
+        // Make a payment for the student
         public void MakePayment(decimal amount, DateTime paymentDate)
         {
-            var payment = new Payment(Payments.Count + 1, this, amount, paymentDate);
-            Payments.Add(payment);
+            paymentHistory.Add(new Payment(this, amount, paymentDate));
         }
 
-        public void DisplayStudentInfo()
+        // Get the student's payment history
+        public List<Payment> GetPaymentHistory()
         {
-            Console.WriteLine($"ID: {StudentId}, Name: {FirstName} {LastName}, DOB: {Dob.ToShortDateString()}, Email: {Email}, Phone: {PhoneNumber}");
+            return paymentHistory;
         }
 
-        public List<Course> GetEnrolledCourses() => EnrolledCourses;
-        public List<Payment> GetPaymentHistory() => Payments;
+        // Update student information
+        public void UpdateStudentInfo(string firstName, string lastName, string email)
+        {
+            ValidateStudentData(firstName, lastName, email);
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+        }
+
+        // Validation for student data
+        private void ValidateStudentData(string firstName, string lastName, string email)
+        {
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+                throw new ArgumentException("Invalid student name.");
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                throw new ArgumentException("Invalid email format.");
+        }
     }
 }
