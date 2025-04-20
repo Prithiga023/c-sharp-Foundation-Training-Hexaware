@@ -2,30 +2,71 @@ using NUnit.Framework;
 
 namespace demonew
 {
-    public class Program
+    class Program
     {
-        // Student Class
-        static void Main()
+        static void Main(string[] args)
         {
-            SIS system = new SIS();
+            SIS sis = new SIS(); // This will load existing data from the file
+            sis.LoadData(); // Assuming LoadData method exists to populate the SIS object
 
-            Teacher teacher = new Teacher(1, "John", "Doe", "john@example.com");
-            system.Teachers.Add(teacher);
+            Console.WriteLine("Enter student ID:");
+            int studentId = Convert.ToInt32(Console.ReadLine());
 
-            Course math = new Course(101, "Mathematics", "MTH101");
-            system.Courses.Add(math);
-            system.AssignTeacherToCourse(teacher, math);
+            // Check if the student already exists
+            var existingStudent = sis.Students.FirstOrDefault(s => s.StudentId == studentId);
+            if (existingStudent != null)
+            {
+                Console.WriteLine("Student found. Do you want to update their information? (yes/no)");
+                string updateChoice = Console.ReadLine()?.ToLower();
+                if (updateChoice == "yes")
+                {
+                    Console.WriteLine("Enter first name:");
+                    string firstName = Console.ReadLine();
 
-            Student student1 = new Student(1, "Alice", "Smith", new DateTime(2001, 5, 21), "alice@example.com", "9876543210");
-            system.Students.Add(student1);
+                    Console.WriteLine("Enter last name:");
+                    string lastName = Console.ReadLine();
 
-            system.EnrollStudentInCourse(student1, math);
-            system.RecordPayment(student1, 500, DateTime.Now);
+                    Console.WriteLine("Enter email:");
+                    string email = Console.ReadLine();
 
-            student1.DisplayStudentInfo();
-            system.GenerateEnrollmentReport(math);
-            system.GeneratePaymentReport(student1);
-            system.CalculateCourseStatistics(math);
+                    // Update student info
+                    existingStudent.UpdateStudentInfo(firstName, lastName, email);
+                    Console.WriteLine("Student information updated successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("No changes made.");
+                }
+            }
+            else
+            {
+                // If student is not found, allow adding new student
+                Console.WriteLine("Student not found. Adding a new student...");
+
+                Console.WriteLine("Enter first name:");
+                string firstName = Console.ReadLine();
+
+                Console.WriteLine("Enter last name:");
+                string lastName = Console.ReadLine();
+
+                Console.WriteLine("Enter email:");
+                string email = Console.ReadLine();
+
+                Console.WriteLine("Enter phone number:");
+                string phone = Console.ReadLine();
+
+                Console.WriteLine("Enter DOB (yyyy-mm-dd):");
+                DateTime dob = DateTime.Parse(Console.ReadLine());
+
+                // Add new student
+                Student student = new Student(studentId, firstName, lastName, dob, email, phone);
+                sis.Students.Add(student);
+
+                Console.WriteLine("New student added successfully.");
+            }
+
+            // Save the data to file
+            sis.SaveData();
         }
     }
 }
