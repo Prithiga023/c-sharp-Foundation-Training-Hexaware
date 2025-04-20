@@ -1,0 +1,94 @@
+CREATE TABLE Student (
+    StudentId INT PRIMARY KEY IDENTITY(1,1),
+    FirstName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    DateOfBirth DATE,
+    Email NVARCHAR(100) UNIQUE,
+    PhoneNumber NVARCHAR(20),
+    OutstandingBalance DECIMAL(10,2) DEFAULT 0
+);
+
+CREATE TABLE Teacher (
+    TeacherId INT PRIMARY KEY IDENTITY(1,1),
+    Name NVARCHAR(100),
+    Email NVARCHAR(100),
+    Expertise NVARCHAR(100)
+);
+
+CREATE TABLE Course (
+    CourseId INT PRIMARY KEY IDENTITY(1,1),
+    CourseName NVARCHAR(100),
+    CourseCode NVARCHAR(20) UNIQUE,
+    TeacherId INT NULL,
+    FOREIGN KEY (TeacherId) REFERENCES Teacher(TeacherId)
+);
+
+CREATE TABLE Enrollment (
+    EnrollmentId INT PRIMARY KEY IDENTITY(1,1),
+    StudentId INT,
+    CourseId INT,
+    EnrollmentDate DATE DEFAULT GETDATE(),
+    FOREIGN KEY (StudentId) REFERENCES Student(StudentId),
+    FOREIGN KEY (CourseId) REFERENCES Course(CourseId)
+);
+
+CREATE TABLE Payment (
+    PaymentId INT PRIMARY KEY IDENTITY(1,1),
+    StudentId INT,
+    PaymentAmount DECIMAL(10,2),
+    PaymentDate DATE,
+    FOREIGN KEY (StudentId) REFERENCES Student(StudentId)
+);
+
+INSERT INTO Student (FirstName, LastName, DateOfBirth, Email, PhoneNumber, OutstandingBalance)
+VALUES 
+('Arvind', 'Subramanian', '2001-02-12', 'arvind.subramanian@tamilmail.com', '9887654321', 300.00),
+('Priya', 'Rajendran', '2000-07-15', 'priya.rajendran@tamilmail.com', '9448893345', 150.00),
+('Karthik', 'Sundaram', '1999-10-05', 'karthik.sundaram@tamilmail.com', '9345076123', 500.00),
+('Nandhini', 'Venkatesan', '2002-01-20', 'nandhini.venkatesan@tamilmail.com', '9876543210', 100.00),
+('Anbu', 'Ravi', '2001-04-11', 'anbu.ravi@tamilmail.com', '9154782632', 0.00);
+
+INSERT INTO Teacher (Name, Email, Expertise)
+VALUES 
+('Dr. Venkatesh', 'venkatesh@tamilcollege.edu', 'Data Science'),
+('Ms. Aishwarya', 'aishwarya@tamilcollege.edu', 'Tamil Literature'),
+('Prof. Surya', 'surya@tamilcollege.edu', 'Software Engineering'),
+('Dr. Kavi', 'kavi@tamilcollege.edu', 'Cloud Computing'),
+('Mr. Arumugam', 'arumugam@tamilcollege.edu', 'Networking');
+
+
+-- Replace the numbers (e.g., 31, 32, ...) with actual TeacherIds you just verified
+INSERT INTO Course (CourseName, CourseCode, TeacherId)
+VALUES 
+('Data Science Basics', 'DS101', 26),
+('Tamil Literature', 'TL102', 27),
+('Software Engineering Principles', 'SE103', 28),
+('Cloud Computing Fundamentals', 'CC104', 29),
+('Networking and Security', 'NS105', 36);
+
+INSERT INTO Student (FirstName, LastName, DateOfBirth, Email, PhoneNumber)
+VALUES 
+('Arun', 'Kumar', '2000-04-15', 'arunkumar@tamilcollege.edu', '9876543210'),
+('Divya', 'Lakshmi', '1999-12-03', 'divya.l@tamilcollege.edu', '9876501234'),
+('Karthik', 'Raj', '2001-06-21', 'karthikr@tamilcollege.edu', '9876598765'),
+('Meena', 'Sundari', '2000-09-10', 'meenas@tamilcollege.edu', '9876512345'),
+('Vignesh', 'V', '1998-02-28', 'vigneshv@tamilcollege.edu', '9876587654');
+
+
+INSERT INTO Enrollment (StudentId, CourseId)
+VALUES 
+(11, 26),
+(12, 27),
+(13, 28),
+(14, 29),
+(15, 30);
+
+INSERT INTO Payment (StudentId, PaymentAmount, PaymentDate)
+VALUES 
+(11, 15000.00, '2025-04-01'),
+(12, 12000.00, '2025-04-02'),
+(13, 18000.00, '2025-04-03'),
+(14, 10000.00, '2025-04-04'),
+(15, 16000.00, '2025-04-05'),
+(16, 14000.00, '2025-04-06');
+
