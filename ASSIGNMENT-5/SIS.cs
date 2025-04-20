@@ -1,61 +1,102 @@
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 namespace demonew
 {
     public class SIS
     {
-        public List<Student> Students = new List<Student>();
-        public List<Course> Courses = new List<Course>();
-        public List<Enrollment> Enrollments = new List<Enrollment>();
-        public List<Teacher> Teachers = new List<Teacher>();
-        public List<Payment> Payments = new List<Payment>();
+        public List<Student> Students { get; set; } = new List<Student>();
+        public List<Course> Courses { get; set; } = new List<Course>();
+        public List<Teacher> Teachers { get; set; } = new List<Teacher>();
 
-        public void EnrollStudentInCourse(Student student, Course course)
+        private const string DataFile = "sis_data.json"; // Path to save and load data
+
+       
+        public SIS()
         {
-            student.EnrollInCourse(course);
-            var enrollment = new Enrollment(Enrollments.Count + 1, student, course, DateTime.Now);
-            Enrollments.Add(enrollment);
+            LoadData();
         }
 
+        // Enroll student in a course
+        public void EnrollStudentInCourse(Student student, Course course)
+        {
+            if (!student.GetEnrollments().Contains(course))
+            {
+                student.EnrollInCourse(course);
+            }
+        }
+
+        // Record a payment for a student
+        public void RecordPayment(Student student, decimal amount, DateTime paymentDate)
+        {
+            student.MakePayment(amount, paymentDate);
+        }
+
+        // Assign teacher to a course
         public void AssignTeacherToCourse(Teacher teacher, Course course)
         {
             course.AssignTeacher(teacher);
         }
 
-        public void RecordPayment(Student student, decimal amount, DateTime paymentDate)
+        // Save data to a JSON file
+        public void SaveData()
         {
-            student.MakePayment(amount, paymentDate);
-            Payments.Add(new Payment(Payments.Count + 1, student, amount, paymentDate));
+            var data = new
+            {
+                Students = Students,
+                Courses = Courses,
+                Teachers = Teachers
+            };
+
+            string jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
+            File.WriteAllText(DataFile, jsonData);
         }
 
-        public void GenerateEnrollmentReport(Course course)
+        // Load data from the JSON file
+        public void LoadData()
         {
-            Console.WriteLine($"\nEnrollment Report for {course.Name}:");
-            foreach (var student in course.GetEnrollments())
+            if (File.Exists(DataFile))
             {
-                Console.WriteLine($"- {student.FirstName} {student.LastName} (ID: {student.StudentId})");
+                string jsonData = File.ReadAllText(DataFile);
+                var data = JsonConvert.DeserializeObject<dynamic>(jsonData);
+
+                Students = data?.Students.ToObject<List<Student>>() ?? new List<Student>();
+                Courses = data?.Courses.ToObject<List<Course>>() ?? new List<Course>();
+                Teachers = data?.Teachers.ToObject<List<Teacher>>() ?? new List<Teacher>();
             }
         }
 
-        public void GeneratePaymentReport(Student student)
+        // Add a new student
+        public void AddStudent(Student student)
         {
-            Console.WriteLine($"\nPayment Report for {student.FirstName} {student.LastName}:");
-            foreach (var payment in student.GetPaymentHistory())
-            {
-                Console.WriteLine($"- Amount: {payment.AmountPaid}, Date: {payment.PaymentDate.ToShortDateString()}");
-            }
+            Students.Add(student);
         }
 
-        public void CalculateCourseStatistics(Course course)
+        // Find a student by ID
+        public Student FindStudentById(int studentId)
         {
-            int count = course.GetEnrollments().Count;
-            decimal total = 0;
-            foreach (var student in course.GetEnrollments())
-            {
-                foreach (var payment in student.GetPaymentHistory())
-                {
-                    total += payment.AmountPaid;
-                }
-            }
-            Console.WriteLine($"\nStatistics for {course.Name}: Enrollments = {count}, Total Payments = {total}");
+            return Students.FirstOrDefault(s => s.StudentId == studentId);
+        }
+
+        // Update student information
+        public void UpdateStudentInfo(Student student, string firstName, string lastName, string email)
+        {
+            student.UpdateStudentInfo(firstName, lastName, email);
+        }
+
+        // Add a new course
+        public void AddCourse(Course course)
+        {
+            Courses.Add(course);
+        }
+
+        // Add a new teacher
+        public void AddTeacher(Teacher teacher)
+        {
+            Teachers.Add(teacher);
         }
     }
 }
